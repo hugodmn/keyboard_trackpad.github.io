@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Handwritten Digit Recognition</title>
+    <title>Handwritten Text Recognition</title>
     <style>
         #canvas {
             border: 1px solid black;
@@ -9,68 +9,27 @@
     </style>
 </head>
 <body>
-    <h1>Handwritten Digit Recognition</h1>
-    
+    <h1>Handwritten Text Recognition</h1>
+
     <!-- Canvas for drawing -->
     <canvas id="canvas" width="200" height="200"></canvas>
-    
-    <!-- Recognized Digit Display -->
+
+    <!-- Recognized Text Display -->
     <div>
-        <p>Recognized Digit: <span id="predictedDigit">?</span></p>
+        <p>Recognized Text: <span id="predictedText"></span></p>
     </div>
-    
-    <!-- Submit Button -->
-    <button id="predictButton">Predict</button>
 
-    <!-- JavaScript -->
-    <script>
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
+    <!-- Buttons -->
+    <div>
+        <button id="predictButton">Predict</button>
+        <button id="spaceButton">Space</button>
+        <button id="deleteButton">Delete</button>
+    </div>
 
-        // Initialize a variable to hold the drawn image
-        let imageData = null;
+    <!-- Include the ONNX Runtime library -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
 
-        // Handle mouse events to draw on the canvas
-        let drawing = false;
-        canvas.addEventListener("mousedown", () => {
-            drawing = true;
-            ctx.beginPath();
-        });
-
-        canvas.addEventListener("mousemove", draw);
-        canvas.addEventListener("mouseup", () => {
-            drawing = false;
-        });
-
-        function draw(e) {
-            if (!drawing) return;
-            ctx.lineWidth = 10;
-            ctx.lineCap = "round";
-            ctx.strokeStyle = "black";
-            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            ctx.stroke();
-        }
-
-        // Handle prediction when the "Predict" button is clicked
-        const predictButton = document.getElementById("predictButton");
-        predictButton.addEventListener("click", predictDigit);
-
-        function predictDigit() {
-            // Get the drawn image data
-            imageData = canvas.toDataURL();
-
-            // Send the image data to the server for prediction (you'll need a server-side script for this)
-            // For this example, we'll just display a placeholder result
-            const predictedDigit = document.getElementById("predictedDigit");
-            predictedDigit.textContent = "Predicting...";
-
-            // Simulate an asynchronous request to the server
-            setTimeout(() => {
-                // Replace this with the actual predicted digit from your server
-                const result = "7";
-                predictedDigit.textContent = result;
-            }, 1000);
-        }
-    </script>
+    <!-- Include the JavaScript file with inference logic -->
+    <script src="inference.js"></script>
 </body>
 </html>
