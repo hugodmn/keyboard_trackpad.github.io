@@ -24,7 +24,7 @@ function clearCanvas() {
 
 async function predict() {
     const session = new onnx.InferenceSession();
-    await session.loadModel('path_to_your_model.onnx');
+    await session.loadModel('./training/model/emnist/best_model.onnx');
 
     const inputData = preprocessCanvasData(canvas);
     const inputTensor = new onnx.Tensor(inputData, 'float32', [1, 1, 28, 28]);
