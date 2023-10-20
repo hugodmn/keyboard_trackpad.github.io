@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // And normalise the data with the mean and the variance 
             inputArray[i] = (inputArray[i] - 0.1307) / 0.3081;
         }
-        console.log(inputArray.length)
+        console.log(inputArray.length);
         return new onnx.Tensor(inputArray, 'float32', [1, 28, 28, 1]);
     }
 });
