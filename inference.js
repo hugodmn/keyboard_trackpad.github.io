@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Perform inference using the ONNX model (replace 'model.onnx' with your model file)
             onnx.InferenceSession.create().then(function (onnxModel) {
-                return onnxModel.loadModel('training/model/emnist/best_model.onnx').then(function () {
+                return onnxModel.loadModel('/training/model/emnist/best_model.onnx').then(function () {
                     const input = new onnx.Tensor(new Float32Array(tensor.data), 'float32');
                     return onnxModel.run([input]);
                 }).then(function (output) {
