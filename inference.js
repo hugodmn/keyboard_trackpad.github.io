@@ -80,8 +80,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         for (let i = 0; i < imageData.length; i++) {
             inputArray[i] = imageData[i] / 255; // Normalize pixel values
+            // And normalise the data with the mean and the variance 
+            inputArray[i] = (inputArray[i] - 0.1307) / 0.3081;
         }
-
+        console.log(inputArray.length)
         return new onnx.Tensor(inputArray, 'float32', [1, 28, 28, 1]);
     }
 });
