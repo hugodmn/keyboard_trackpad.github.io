@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Handwritten Digit Recognition</title>
+    <style>
+        #canvas {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
     <h1>Handwritten Digit Recognition</h1>
@@ -19,11 +24,6 @@
 
     <!-- JavaScript -->
     <script>
-        // Load the ONNX model (you need to replace 'model.onnx' with your model file)
-        const onnxModel = new onnx.Model();
-        onnxModel.load("/training/model/emnist/best_model.onnx");
-
-        // Get the canvas element and 2d context
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
 
@@ -31,25 +31,24 @@
         let imageData = null;
 
         // Handle mouse events to draw on the canvas
-        canvas.addEventListener("mousedown", startDrawing);
-        canvas.addEventListener("mousemove", draw);
-        canvas.addEventListener("mouseup", stopDrawing);
-
-        function startDrawing(e) {
+        let drawing = false;
+        canvas.addEventListener("mousedown", () => {
+            drawing = true;
             ctx.beginPath();
-            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-            canvas.addEventListener("mousemove", draw);
-        }
+        });
+
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", () => {
+            drawing = false;
+        });
 
         function draw(e) {
+            if (!drawing) return;
+            ctx.lineWidth = 10;
+            ctx.lineCap = "round";
+            ctx.strokeStyle = "black";
             ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
             ctx.stroke();
-        }
-
-        function stopDrawing() {
-            canvas.removeEventListener("mousemove", draw);
-            // Capture the drawn image
-            imageData = canvas.toDataURL();
         }
 
         // Handle prediction when the "Predict" button is clicked
@@ -57,48 +56,21 @@
         predictButton.addEventListener("click", predictDigit);
 
         function predictDigit() {
-            if (imageData) {
-                // Convert the drawn image to an HTML Image
-                const img = new Image();
-                img.src = imageData;
+            // Get the drawn image data
+            imageData = canvas.toDataURL();
 
-                img.onload = function() {
-                    // Resize the image to match the model's input size (e.g., 28x28)
-                    const resizedImg = resizeImage(img, 28, 28);
+            // Send the image data to the server for prediction (you'll need a server-side script for this)
+            // For this example, we'll just display a placeholder result
+            const predictedDigit = document.getElementById("predictedDigit");
+            predictedDigit.textContent = "Predicting...";
 
-                    // Preprocess the image (e.g., normalize, convert to tensor)
-                    const tensor = preprocessImage(resizedImg);
-
-                    // Perform inference using the ONNX model
-                    const digit = onnxModel.predict(tensor);
-
-                    // Display the recognized digit
-                    const predictedDigit = document.getElementById("predictedDigit");
-                    predictedDigit.textContent = digit;
-                };
-            }
-        }
-
-        // Resize an image to the target width and height
-        function resizeImage(image, width, height) {
-            const canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(image, 0, 0, width, height);
-            return canvas;
-        }
-
-        // Preprocess the image (you need to define this function based on your model's requirements)
-        function preprocessImage(image) {
-            // Perform any necessary preprocessing, e.g., normalize and convert to tensor
-            // Return the preprocessed image as a tensor
-            // Example: const tensor = ...;
-            return tensor;
+            // Simulate an asynchronous request to the server
+            setTimeout(() => {
+                // Replace this with the actual predicted digit from your server
+                const result = "7";
+                predictedDigit.textContent = result;
+            }, 1000);
         }
     </script>
-
-    <!-- Include the ONNX Runtime library -->
-    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
 </body>
 </html>
