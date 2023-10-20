@@ -1,89 +1,64 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    const spaceButton = document.getElementById("spaceButton");
-    const deleteButton = document.getElementById("deleteButton");
-    const recognizedText = document.getElementById("predictedText");
+let canvas = document.getElementById('the-canvas');
+let ctx = canvas.getContext('2d');
+let isDrawing = false;
+let sentenceElement = document.getElementById('sentence');
+let currentSentence = '';
 
-    let drawing = false;
+// Load the ONNX model
+let session = new onnx.InferenceSession();
+session.loadModel('./training/model/emnist/best_model.onnx');
 
-    canvas.addEventListener("mousedown", () => {
-        drawing = true;
-        ctx.beginPath();
-    });
+// Function to handle the drawing in canvas
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
 
-    canvas.addEventListener("mousemove", draw);
-    canvas.addEventListener("mouseup", () => {
-        drawing = false;
-    });
+function startDrawing(e) {
+    isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+}
 
-    function draw(e) {
-        if (!drawing) return;
-        ctx.lineWidth = 10;
-        ctx.lineCap = "round";
-        ctx.strokeStyle = "black";
-        ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-        ctx.stroke();
-    }
+function draw(e) {
+    if (!isDrawing) return;
+    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.stroke();
+}
 
-    const predictButton = document.getElementById("predictButton");
-    predictButton.addEventListener("click", predictCharacter);
+function stopDrawing() {
+    isDrawing = false;
+}
 
-    function predictCharacter() {
-        const canvasData = canvas.toDataURL(); // Get the drawn image data
+// Function to predict what's drawn on the canvas
+async function predict() {
+    // Here, preprocess the canvas content (image) to fit your model input requirements.
+    // This might include resizing the image, converting it to a tensor, normalizing it, etc.
 
-        // Perform character recognition using the ONNX model
-        const image = new Image();
-        image.src = canvasData;
+    // For demonstration, assuming the preprocessed input is stored in 'inputTensor'.
+    const inputTensor = {};  // Your actual preprocessing will replace this line
 
-        image.onload = function () {
-            // Resize the image to the model's input size (e.g., 28x28 pixels)
-            const resizedCanvas = document.createElement("canvas");
-            const resizedCtx = resizedCanvas.getContext("2d");
-            resizedCanvas.width = 28;
-            resizedCanvas.height = 28;
-            resizedCtx.drawImage(image, 0, 0, 28, 28);
+    // Running the model to get the prediction
+    const outputMap = await session.run([inputTensor]);
+    const outputData = outputMap.values().next().value.data;  // or another appropriate way to extract data
 
-            // Preprocess the resized image
-            const tensor = preprocessImage(resizedCanvas);
+    // Convert model output to readable result (i.e., the predicted character)
+    const predictedCharacter = '';  // Add your logic to extract character from 'outputData'
 
-            // Perform inference using the ONNX model (replace 'model.onnx' with your model file)
-            onnx.InferenceSession.create().then(function (onnxModel) {
-                return onnxModel.loadModel('/training/model/emnist/best_model.onnx').then(function () {
-                    const input = new onnx.Tensor(new Float32Array(tensor.data), 'float32');
-                    return onnxModel.run([input]);
-                }).then(function (output) {
-                    // Display the recognized character
-                    const recognizedCharacter = String.fromCharCode(65 + Math.round(output[0].data[0] * 25));
-                    recognizedText.textContent += recognizedCharacter;
-                }).then(function () {
-                    // Clear the canvas
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                });
-            });
-        };
-    }
+    // Add the predicted character to the sentence
+    currentSentence += predictedCharacter;
+    sentenceElement.innerText = currentSentence;
 
-    spaceButton.addEventListener("click", function () {
-        recognizedText.textContent += " ";
-    });
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-    deleteButton.addEventListener("click", function () {
-        const currentText = recognizedText.textContent;
-        recognizedText.textContent = currentText.substring(0, currentText.length - 1);
-    });
+function addSpace() {
+    currentSentence += ' ';
+    sentenceElement.innerText = currentSentence;
+}
 
-    // Preprocess the image (normalize and convert to a tensor)
-    function preprocessImage(image) {
-        const imageData = image.getContext("2d").getImageData(0, 0, image.width, image.height).data;
-        const inputArray = new Float32Array(imageData.length);
-
-        for (let i = 0; i < imageData.length; i++) {
-            inputArray[i] = imageData[i] / 255; // Normalize pixel values
-            // And normalise the data with the mean and the variance 
-            inputArray[i] = (inputArray[i] - 0.1307) / 0.3081;
-        }
-        console.log(inputArray.length);
-        return new onnx.Tensor(inputArray, 'float32', [1, 28, 28, 1]);
-    }
-});
+function deleteCharacter() {
+    currentSentence = currentSentence.slice(0, -1);  // Remove the last character
+    sentenceElement.innerText = currentSentence;
+}

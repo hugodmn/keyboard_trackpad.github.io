@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Handwritten Text Recognition</title>
-    <style>
-        #canvas {
-            border: 1px solid black;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <title>Handwritten Character Recognition</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
 </head>
 <body>
-    <h1>Handwritten Text Recognition</h1>
 
-    <!-- Canvas for drawing -->
-    <canvas id="canvas" width="200" height="200"></canvas>
+    <h1>Handwritten Character Recognition</h1>
+    <p id="sentence"></p>
 
-    <!-- Recognized Text Display -->
-    <div>
-        <p>Recognized Text: <span id="predictedText"></span></p>
-    </div>
+    <canvas id="the-canvas" width="280" height="280" style="border: 1px solid black;"></canvas><br/>
 
-    <!-- Buttons -->
-    <div>
-        <button id="predictButton">Predict</button>
-        <button id="spaceButton">Space</button>
-        <button id="deleteButton">Delete</button>
-    </div>
+    <button onclick="predict()">Predict</button>
+    <button onclick="addSpace()">Add Space</button>
+    <button onclick="deleteCharacter()">Delete</button>
 
-    <!-- Include the ONNX Runtime library -->
-    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
-
-    <!-- Include the JavaScript file with inference logic -->
     <script src="inference.js"></script>
 </body>
 </html>
