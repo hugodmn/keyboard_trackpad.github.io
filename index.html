@@ -1,28 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Handwritten Digit & Letter Classifier</title>
+    <title>MNIST Web App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-
-<div>
-    <input type="text" id="sentenceField" readonly>
-</div>
-
-<div>
-    <canvas id="drawingCanvas" width="280" height="280"></canvas>
-</div>
-
-<div>
-    <button onclick="predict()">Predict and Add to Sentence</button>
-    <button onclick="addSpace()">Add Space</button>
-    <button onclick="deleteCharacter()">Delete</button>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/onnxjs@latest/dist/onnx.min.js"></script>
-<script src="inference.js"></script>
-
+    <div class="container">
+        <div class="sentence-section">
+            <div id="sentence"> </div>
+            <button id="deleteButton">Delete</button>
+            <button id="spaceButton">Space</button>
+        </div>
+        <canvas id="canvas" width="280" height="280"></canvas>
+        <div class="info-section">
+            <button id="predictButton">Prédire</button>
+            <button id="checkDataButton">Check Data</button>
+            <div id="prediction">Prédiction: ?</div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+    <script src="inference.js"></script>
 </body>
+
 </html>
