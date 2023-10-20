@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const ctx = canvas.getContext("2d");
     const spaceButton = document.getElementById("spaceButton");
     const deleteButton = document.getElementById("deleteButton");
+    const recognizedText = document.getElementById("predictedText");
 
     let drawing = false;
+
     canvas.addEventListener("mousedown", () => {
         drawing = true;
         ctx.beginPath();
@@ -49,13 +51,12 @@ document.addEventListener("DOMContentLoaded", function () {
             onnx.InferenceSession.create().then(function (onnxModel) {
                 return onnxModel.loadModel('training/model/emnist/best_model.onnx').then(function () {
                     const input = new onnx.Tensor(new Float32Array(tensor.data), 'float32');
-                    const character = onnxModel.run([input]);
-
+                    return onnxModel.run([input]);
+                }).then(function (output) {
                     // Display the recognized character
-                    const recognizedText = document.getElementById("predictedText");
-                    const currentText = recognizedText.textContent;
-                    recognizedText.textContent = currentText + String.fromCharCode(65 + Math.round(character[0].data[0] * 25));
-
+                    const recognizedCharacter = String.fromCharCode(65 + Math.round(output[0].data[0] * 25));
+                    recognizedText.textContent += recognizedCharacter;
+                }).then(function () {
                     // Clear the canvas
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                 });
@@ -64,13 +65,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     spaceButton.addEventListener("click", function () {
-        const recognizedText = document.getElementById("predictedText");
         recognizedText.textContent += " ";
     });
 
     deleteButton.addEventListener("click", function () {
-        const recognizedText = document.getElementById("predictedText");
-        recognizedText.textContent = recognizedText.textContent.slice(0, -1);
+        const currentText = recognizedText.textContent;
+        recognizedText.textContent = currentText.substring(0, currentText.length - 1);
     });
 
     // Preprocess the image (normalize and convert to a tensor)
