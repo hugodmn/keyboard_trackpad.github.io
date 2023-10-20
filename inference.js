@@ -1,3 +1,7 @@
+
+
+document.addEventListener('DOMContentLoaded', function () {
+
 let canvas = document.getElementById('the-canvas');
 let ctx = canvas.getContext('2d');
 let isDrawing = false;
@@ -62,3 +66,5 @@ function deleteCharacter() {
     currentSentence = currentSentence.slice(0, -1);  // Remove the last character
     sentenceElement.innerText = currentSentence;
 }
+
+});
