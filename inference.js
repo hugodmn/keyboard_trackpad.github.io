@@ -1,76 +1,66 @@
+const canvas = document.getElementById('drawingCanvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
 
-
-document.addEventListener('DOMContentLoaded', function () {
-
-let canvas = document.getElementById('the-canvas');
-let ctx = canvas.getContext('2d');
-let isDrawing = false;
-let sentenceElement = document.getElementById('sentence');
-let currentSentence = '';
-
-// Load the ONNX model
-const session = new onnx.InferenceSession();
-
-myOnnxSession.loadModel('./training/model/emnist/best_model.onnx').then(() => {
-console.log('model loaded');
-
-
-console.log(session);
-// Function to handle the drawing in canvas
-canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousedown', () => { drawing = true; });
+canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
 canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', stopDrawing);
-canvas.addEventListener('mouseout', stopDrawing);
 
-function startDrawing(e) {
-    isDrawing = true;
-    ctx.beginPath();
-    ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
-}
+function draw(event) {
+    if (!drawing) return;
+    ctx.lineWidth = 10;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
 
-function draw(e) {
-    if (!isDrawing) return;
-    ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+    ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
     ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
 }
 
-function stopDrawing() {
-    isDrawing = false;
-}
-
-// Function to predict what's drawn on the canvas
-async function predict() {
-    // Here, preprocess the canvas content (image) to fit your model input requirements.
-    // This might include resizing the image, converting it to a tensor, normalizing it, etc.
-
-    // For demonstration, assuming the preprocessed input is stored in 'inputTensor'.
-    const inputTensor = {};  // Your actual preprocessing will replace this line
-
-    // Running the model to get the prediction
-    const outputMap = await session.run([inputTensor]);
-    const outputData = outputMap.values().next().value.data;  // or another appropriate way to extract data
-
-    // Convert model output to readable result (i.e., the predicted character)
-    const predictedCharacter = '';  // Add your logic to extract character from 'outputData'
-
-    // Add the predicted character to the sentence
-    currentSentence += predictedCharacter;
-    sentenceElement.innerText = currentSentence;
-
-    // Clear the canvas
+function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+async function predict() {
+    const session = new onnx.InferenceSession();
+    await session.loadModel('path_to_your_model.onnx');
+
+    const inputData = preprocessCanvasData(canvas);
+    const inputTensor = new onnx.Tensor(inputData, 'float32', [1, 1, 28, 28]);
+    const outputMap = await session.run([inputTensor]);
+    const outputData = outputMap.values().next().value.data;
+
+    const prediction = outputData.indexOf(Math.max(...outputData));
+    
+    // Convert the prediction to the appropriate letter/digit
+    const predictedChar = convertToChar(prediction);
+    
+    // Add predicted char to the sentence field
+    document.getElementById('sentenceField').value += predictedChar;
+    
+    // Clear canvas after prediction
+    clearCanvas();
+}
+
 function addSpace() {
-    currentSentence += ' ';
-    sentenceElement.innerText = currentSentence;
+    document.getElementById('sentenceField').value += ' ';
 }
 
 function deleteCharacter() {
-    currentSentence = currentSentence.slice(0, -1);  // Remove the last character
-    sentenceElement.innerText = currentSentence;
+    const currentSentence = document.getElementById('sentenceField').value;
+    document.getElementById('sentenceField').value = currentSentence.slice(0, -1);
 }
 
-});
+function preprocessCanvasData(canvas) {
+    // Convert canvas to grayscale 28x28 and normalize
+    // This function depends on your model's input requirements
+    // Implement accordingly.
+}
 
-});
+function convertToChar(predictionIndex) {
+    // Map the prediction index to the corresponding letter/digit
+    // Assuming the model predicts numbers first and then letters
+    // Implement this function based on your model's classes
+}
+
