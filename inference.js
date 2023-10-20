@@ -10,7 +10,7 @@ let modelSession = null;
 // Load the model during the page load
 window.onload = async function() {
     modelSession = new onnx.InferenceSession();
-    await modelSession.loadModel('./training/model/emnist/best_model.onnx');
+    await modelSession.loadModel('path_to_your_model.onnx');
 };
 
 canvas.addEventListener('mousedown', () => { drawing = true; });
@@ -78,5 +78,12 @@ function preprocessCanvasData(canvas) {
         grayscaleData.push(avg);
     }
 
-    // Normalize using
+    // Normalize using variance and std
+    const mean = grayscaleData.reduce((sum, value) => sum + value, 0) / grayscaleData.length;
+    const variance = grayscaleData.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / grayscaleData.length;
+    const std = Math.sqrt(variance);
+
+    const normalizedData = grayscaleData.map(value => (value - mean) / std);
+
+    return normalizedData;
 }
