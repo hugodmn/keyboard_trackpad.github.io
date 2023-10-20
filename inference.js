@@ -9,9 +9,13 @@ let sentenceElement = document.getElementById('sentence');
 let currentSentence = '';
 
 // Load the ONNX model
-let session = new onnx.InferenceSession();
-session.loadModel('./training/model/emnist/best_model.onnx');
+const session = new onnx.InferenceSession();
 
+myOnnxSession.loadModel('./training/model/emnist/best_model.onnx').then(() => {
+console.log('model loaded');
+
+
+console.log(session);
 // Function to handle the drawing in canvas
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
@@ -66,5 +70,7 @@ function deleteCharacter() {
     currentSentence = currentSentence.slice(0, -1);  // Remove the last character
     sentenceElement.innerText = currentSentence;
 }
+
+});
 
 });
