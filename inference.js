@@ -2,6 +2,17 @@ const canvas = document.getElementById('drawingCanvas');
 const ctx = canvas.getContext('2d');
 let drawing = false;
 
+// Mapping from model's output index to corresponding character
+const classMapping = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'd', 'e', 'f', 'g', 'h', 'n', 'q', 'r', 't'];
+
+let modelSession = null;
+
+// Load the model during the page load
+window.onload = async function() {
+    modelSession = new onnx.InferenceSession();
+    await modelSession.loadModel('./training/model/emnist/best_model.onnx');
+};
+
 canvas.addEventListener('mousedown', () => { drawing = true; });
 canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
 canvas.addEventListener('mousemove', draw);
@@ -23,23 +34,20 @@ function clearCanvas() {
 }
 
 async function predict() {
-    const session = new onnx.InferenceSession();
-    await session.loadModel('./training/model/emnist/best_model.onnx');
+    if(!modelSession) {
+        console.error("Model not loaded yet!");
+        return;
+    }
 
     const inputData = preprocessCanvasData(canvas);
     const inputTensor = new onnx.Tensor(inputData, 'float32', [1, 1, 28, 28]);
-    const outputMap = await session.run([inputTensor]);
+    const outputMap = await modelSession.run([inputTensor]);
     const outputData = outputMap.values().next().value.data;
 
-    const prediction = outputData.indexOf(Math.max(...outputData));
+    const predictionIndex = outputData.indexOf(Math.max(...outputData));
+    const predictedChar = classMapping[predictionIndex];
     
-    // Convert the prediction to the appropriate letter/digit
-    const predictedChar = convertToChar(prediction);
-    
-    // Add predicted char to the sentence field
     document.getElementById('sentenceField').value += predictedChar;
-    
-    // Clear canvas after prediction
     clearCanvas();
 }
 
@@ -53,14 +61,21 @@ function deleteCharacter() {
 }
 
 function preprocessCanvasData(canvas) {
-    // Convert canvas to grayscale 28x28 and normalize
-    // This function depends on your model's input requirements
-    // Implement accordingly.
-}
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = 28;
+    tmpCanvas.height = 28;
 
-function convertToChar(predictionIndex) {
-    // Map the prediction index to the corresponding letter/digit
-    // Assuming the model predicts numbers first and then letters
-    // Implement this function based on your model's classes
-}
+    const tmpCtx = tmpCanvas.getContext('2d');
+    tmpCtx.drawImage(canvas, 0, 0, 28, 28);
 
+    const imageData = tmpCtx.getImageData(0, 0, 28, 28);
+    let data = Array.from(imageData.data);
+
+    // Convert to grayscale
+    const grayscaleData = [];
+    for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        grayscaleData.push(avg);
+    }
+
+    // Normalize using
