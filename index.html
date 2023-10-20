@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Handwritten Digit Recognition</title>
+</head>
+<body>
+    <h1>Handwritten Digit Recognition</h1>
+    
+    <!-- Canvas for drawing -->
+    <canvas id="canvas" width="200" height="200"></canvas>
+    
+    <!-- Recognized Digit Display -->
+    <div>
+        <p>Recognized Digit: <span id="predictedDigit">?</span></p>
+    </div>
+    
+    <!-- Submit Button -->
+    <button id="predictButton">Predict</button>
+
+    <!-- JavaScript -->
+    <script>
+        // Load the ONNX model (you need to replace 'model.onnx' with your model file)
+        const onnxModel = new onnx.Model();
+        onnxModel.load("/Users/hugo/Desktop/Projects/keyboard_trackpad.github.io/training/model/emnist/best_model.onnx");
+
+        // Get the canvas element and 2d context
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Initialize a variable to hold the drawn image
+        let imageData = null;
+
+        // Handle mouse events to draw on the canvas
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDrawing);
+
+        function startDrawing(e) {
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            canvas.addEventListener("mousemove", draw);
+        }
+
+        function draw(e) {
+            ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            canvas.removeEventListener("mousemove", draw);
+            // Capture the drawn image
+            imageData = canvas.toDataURL();
+        }
+
+        // Handle prediction when the "Predict" button is clicked
+        const predictButton = document.getElementById("predictButton");
+        predictButton.addEventListener("click", predictDigit);
+
+        function predictDigit() {
+            if (imageData) {
+                // Convert the drawn image to an HTML Image
+                const img = new Image();
+                img.src = imageData;
+
+                img.onload = function() {
+                    // Resize the image to match the model's input size (e.g., 28x28)
+                    const resizedImg = resizeImage(img, 28, 28);
+
+                    // Preprocess the image (e.g., normalize, convert to tensor)
+                    const tensor = preprocessImage(resizedImg);
+
+                    // Perform inference using the ONNX model
+                    const digit = onnxModel.predict(tensor);
+
+                    // Display the recognized digit
+                    const predictedDigit = document.getElementById("predictedDigit");
+                    predictedDigit.textContent = digit;
+                };
+            }
+        }
+
+        // Resize an image to the target width and height
+        function resizeImage(image, width, height) {
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(image, 0, 0, width, height);
+            return canvas;
+        }
+
+        // Preprocess the image (you need to define this function based on your model's requirements)
+        function preprocessImage(image) {
+            // Perform any necessary preprocessing, e.g., normalize and convert to tensor
+            // Return the preprocessed image as a tensor
+            // Example: const tensor = ...;
+            return tensor;
+        }
+    </script>
+
+    <!-- Include the ONNX Runtime library -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+</body>
+</html>
