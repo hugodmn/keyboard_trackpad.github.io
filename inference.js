@@ -4,14 +4,15 @@ ctx.fillStyle = "black";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 let isDrawing = false;
 let model;
-const labels = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',  'u', 'v', 'w', 'x', 'y', 'z'];
+const labels = ['N/A', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',  'u', 'v', 'w', 'x', 'y', 'z'];
 
 const sentences = [
-    "Hello World!",
-    "AI is amazing.",
-    "Practice makes perfect.",
-    "The quick brown fox.",
-    "test"
+    "yliess is a good teacher",
+    "ai is amazing",
+    "i love machine learning",
+    "resnet is a great model",
+    "pytorch is the best framework",
+    "i love to learn new things",
     // ... add more sentences if you like
 ];
 
@@ -23,7 +24,7 @@ setRandomSentence();
 // Charger le modèle lors du chargement de la page
 async function loadModel() {
     model = new onnx.InferenceSession();
-    await model.loadModel('./training/model/emnist/resnet.onnx');
+    await model.loadModel('./training/model/emnist/only_letters/resnet.onnx');
 }
 loadModel();
 
