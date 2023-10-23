@@ -6,8 +6,9 @@
 A web-based application built to assist children in learning to write letters and digits. The application utilizes the power of ONNX.js to run a trained machine learning model directly in the browser to predict handwritten inputs.
 
   </div>
-  <img src="images/screenshot.png" alt="App Screenshot" style="max-width: 50%;">
+  <img src="images/webapp.png" alt="App Screenshot" style="max-width: 50%;">
 </div>
+
 ## Features
 
 - **Drawing Canvas**: A responsive canvas area where users can draw letters and digits.
