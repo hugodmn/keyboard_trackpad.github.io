@@ -23,9 +23,15 @@ setRandomSentence();
 
 // Charger le modèle lors du chargement de la page
 async function loadModel() {
+
     model = new onnx.InferenceSession();
+    document.getElementById('predictButton').innerText = 'Loading model...';
     await model.loadModel('./training/model/emnist/only_letters/resnet.onnx');
     document.getElementById('predictButton').disabled = false;
+    document.getElementById('predictButton').innerText = 'Predict';
+
+
+    
 }
 
 loadModel();
