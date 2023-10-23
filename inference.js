@@ -7,6 +7,7 @@ let model;
 const labels = ['N/A', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',  'u', 'v', 'w', 'x', 'y', 'z'];
 
 window.onload = async function() {
+    await setRandomSentence();
     await loadModel();
 }
 
@@ -22,7 +23,7 @@ const sentences = [
 
 let currentSentence = "";
 let currentCharIndex = 0;
-setRandomSentence();
+
 
 
 // Charger le modèle lors du chargement de la page
@@ -37,8 +38,6 @@ async function loadModel() {
 
     
 }
-
-loadModel();
 
 // for the mouse
 canvas.addEventListener('mousedown', (e) => { 
