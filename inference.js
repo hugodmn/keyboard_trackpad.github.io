@@ -6,6 +6,10 @@ let isDrawing = false;
 let model;
 const labels = ['N/A', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',  'u', 'v', 'w', 'x', 'y', 'z'];
 
+window.onload = async function() {
+    await loadModel();
+}
+
 const sentences = [
     "yliess is a good teacher",
     "ai is amazing",
