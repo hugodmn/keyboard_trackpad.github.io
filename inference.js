@@ -160,7 +160,7 @@ document.getElementById('predictButton').addEventListener('click', async functio
     let predictionIndex = await predictWithONNXModel();
     let predictedLabel = labels[predictionIndex];
     
-    document.getElementById('prediction').textContent = `Prédiction: ${predictedLabel}`;
+    document.getElementById('prediction').textContent = `Prediction: ${predictedLabel}`;
     
     // Check if prediction matches the current character in the sentence
     if ((predictedLabel === '9') && (currentSentence[currentCharIndex]==='q'))
