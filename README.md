@@ -3,9 +3,9 @@
 
 A web-based application built to assist children in learning to write letters and digits. The application utilizes the power of ONNX.js to run a trained machine learning model directly in the browser to predict handwritten inputs.
 
-| | |
+<!-- | | | -->
 |:--|:--|
-| **A web-based application built to assist children in learning to write letters and digits.** The application utilizes the power of ONNX.js to run a trained machine learning model directly in the browser to predict handwritten inputs. | ![App Screenshot](images/screenshot.png) |
+| **A web-based application built to assist children in learning to write letters and digits.** The application utilizes the power of ONNX.js to run a trained machine learning model directly in the browser to predict handwritten inputs. | ![App Screenshot](images/webapp.png) |
 
 ## Features
 
