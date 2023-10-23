@@ -75,3 +75,38 @@ body {
 #deleteButton:hover, #spaceButton:hover {
     background-color: #0056b3;
 }
+
+
+
+.debug-section {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#processedCanvas {
+    border: 1px solid #ccc;
+    image-rendering: pixelated; /* This makes the small image look blocky when scaled up */
+}
+.container {
+    display: flex;
+    flex-direction: column;  /* changed this */
+    justify-content: center;  /* changed this */
+    align-items: center;  /* changed this */
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.sentence-section {
+    display: flex;
+    justify-content: center;  /* changed this */
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}

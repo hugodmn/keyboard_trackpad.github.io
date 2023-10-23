@@ -3,22 +3,22 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>MNIST Web App</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
+    
     <div class="container">
         <div class="sentence-section">
-            <div id="sentence"> </div>
-            <button id="deleteButton">Delete</button>
-            <button id="spaceButton">Space</button>
+            <span id="sentence">Your sentence here.</span>
         </div>
+    
         <canvas id="canvas" width="280" height="280"></canvas>
         <div class="info-section">
             <button id="predictButton">Prédire</button>
-            <button id="checkDataButton">Check Data</button>
             <div id="prediction">Prédiction: ?</div>
         </div>
     </div>
