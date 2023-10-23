@@ -25,7 +25,9 @@ setRandomSentence();
 async function loadModel() {
     model = new onnx.InferenceSession();
     await model.loadModel('./training/model/emnist/only_letters/resnet.onnx');
+    document.getElementById('predictButton').disabled = false;
 }
+
 loadModel();
 
 // for the mouse
@@ -163,22 +165,7 @@ document.getElementById('predictButton').addEventListener('click', async functio
     document.getElementById('prediction').textContent = `Prediction: ${predictedLabel}`;
     
     // Check if prediction matches the current character in the sentence
-    if ((predictedLabel === '9') && (currentSentence[currentCharIndex]==='q'))
-    {
-        setNextCharIndex();
-        if (currentCharIndex >= currentSentence.length) { // If we've reached the end of the sentence
-            alert("Well done! Starting a new sentence.");
-            setRandomSentence();
-        }
-    }
-    if ((predictedLabel === 'C') && (currentSentence[currentCharIndex]==='c'))
-    {
-        setNextCharIndex();
-        if (currentCharIndex >= currentSentence.length) { // If we've reached the end of the sentence
-            alert("Well done! Starting a new sentence.");
-            setRandomSentence();
-        }
-    }
+
     if (predictedLabel === currentSentence[currentCharIndex]) {
         // currentCharIndex++;
         setNextCharIndex();
