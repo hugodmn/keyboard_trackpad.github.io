@@ -70,6 +70,7 @@ canvas.addEventListener('mousemove', draw);
  // for phone users 
 
 canvas.addEventListener('touchstart', function(e) {
+    startPredictionTimer()
     e.preventDefault();
     isDrawing = true;
     let touch = e.touches[0];
@@ -78,6 +79,7 @@ canvas.addEventListener('touchstart', function(e) {
 });
 
 canvas.addEventListener('touchend', function() {
+    startPredictionTimer()
     e.preventDefault();
     isDrawing = false;
 });
