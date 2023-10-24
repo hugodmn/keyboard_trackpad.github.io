@@ -24,16 +24,29 @@ const sentences = [
 let currentSentence = "";
 let currentCharIndex = 0;
 
+let predictionTimeout;
 
+function startPredictionTimer() {
+    // Clear any existing timers to ensure only one timer runs at a time
+    clearTimeout(predictionTimeout);
+
+    // Set the new timer
+    predictionTimeout = setTimeout(async function() {
+        await makePrediction();
+    }, 1500);  // 2 seconds delay
+}
 
 // Charger le modèle lors du chargement de la page
 async function loadModel() {
-
+    let loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.innerText = "Loading model...";
     model = new onnx.InferenceSession();
-    document.getElementById('predictButton').innerText = 'Loading model...';
+    // document.getElementById('predictButton').innerText = 'Loading model...';
     await model.loadModel('./training/model/emnist/only_letters/resnet.onnx');
-    document.getElementById('predictButton').disabled = false;
-    document.getElementById('predictButton').innerText = 'Predict';
+    // document.getElementById('predictButton').disabled = false;
+    // document.getElementById('predictButton').innerText = 'Predict';
+    loadingIndicator.innerText = "Model loaded. Start drawing!";
+
 
 
     
@@ -41,6 +54,7 @@ async function loadModel() {
 
 // for the mouse
 canvas.addEventListener('mousedown', (e) => { 
+    startPredictionTimer()
     isDrawing = true;
     ctx.beginPath();
     ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
@@ -48,6 +62,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 
 canvas.addEventListener('mouseup', () => { 
+    startPredictionTimer()
     isDrawing = false; 
 });
 
@@ -166,14 +181,11 @@ function setNextCharIndex() {
     }
 }
 
-
-document.getElementById('predictButton').addEventListener('click', async function() {
+async function makePrediction() {
     let predictionIndex = await predictWithONNXModel();
     let predictedLabel = labels[predictionIndex];
-    
+
     document.getElementById('prediction').textContent = `Prediction: ${predictedLabel}`;
-    
-    // Check if prediction matches the current character in the sentence
 
     if (predictedLabel === currentSentence[currentCharIndex]) {
         // currentCharIndex++;
@@ -181,6 +193,7 @@ document.getElementById('predictButton').addEventListener('click', async functio
         if (currentCharIndex >= currentSentence.length) { // If we've reached the end of the sentence
             alert("Well done! Starting a new sentence.");
             setRandomSentence();
+            currentCharIndex = 0;
         }
     } else {
         // Display current character in red if it's wrong
@@ -193,8 +206,38 @@ document.getElementById('predictButton').addEventListener('click', async functio
 
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-});
+
+// document.getElementById('predictButton').addEventListener('click', async function() {
+//     let predictionIndex = await predictWithONNXModel();
+//     let predictedLabel = labels[predictionIndex];
+    
+//     document.getElementById('prediction').textContent = `Prediction: ${predictedLabel}`;
+    
+//     // Check if prediction matches the current character in the sentence
+
+//     if (predictedLabel === currentSentence[currentCharIndex]) {
+//         // currentCharIndex++;
+//         setNextCharIndex();
+//         if (currentCharIndex >= currentSentence.length) { // If we've reached the end of the sentence
+//             alert("Well done! Starting a new sentence.");
+//             setRandomSentence();
+//             currentCharIndex = 0;
+//         }
+//     } else {
+//         // Display current character in red if it's wrong
+//         let sentenceElem = document.getElementById('sentence');
+//         sentenceElem.childNodes[currentCharIndex].style.color = 'red';
+//     }
+
+//     // Update the display accordingly
+//     updateSentenceDisplay();
+
+//     // Clear the canvas
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// });
 
 function setRandomSentence() {
     // currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
